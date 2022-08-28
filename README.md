@@ -1,7 +1,7 @@
 # SRTools
 Toolkit for modding Saints Row 2022 written in Go.
 ![](https://i.imgur.com/ib6Akqt.png)
-[Windows, Linux, macOS](https://github.com/Sorrow446/SRTools/releases)
+[Windows, Linux, and macOS binaries](https://github.com/Sorrow446/SRTools/releases)
 
 # Setup
 [lz4 binary](https://github.com/lz4/lz4/releases/latest) is needed if using Windows.
