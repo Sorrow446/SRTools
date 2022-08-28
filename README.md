@@ -7,7 +7,7 @@ Toolkit for modding Saints Row 2022 written in Go.
 [lz4 binary](https://github.com/lz4/lz4/releases/latest) is needed if using Windows.
 
 # Usage
-Only extracting is currently supported. vpp_pc and str2_pc pakfiles are supported.
+Only extracting is currently supported. vpp_pc and str2_pc packfiles are supported.
 
 Extract "dlc_01.vpp_pc" to "SRTools_extracted":   
 `srtools_x64.exe unpack -i dlc_01.vpp_pc`
