@@ -14,3 +14,19 @@ Extract "dlc_01.vpp_pc" to "SRTools_extracted":
 
 Extract "dlc_01.vpp_pc" and "dlc_preorder.vpp_pc" to "G:\sr" with 25 threads:   
 `srtools_x64.exe unpack -i dlc_01.vpp_pc dlc_preorder.vpp_pc -o G:\sr -t 25`
+
+```
+Usage: srtools_x64.exe --inpaths INPATHS [--outpath OUTPATH] [--threads THREADS] COMMAND
+
+Positional arguments:
+  COMMAND
+
+Options:
+  --inpaths INPATHS, -i INPATHS
+                         Input paths of packfiles.
+  --outpath OUTPATH, -o OUTPATH
+                         Output path. Path will be made if it doesn't already exist.
+  --threads THREADS, -t THREADS
+                         Max threads (1-100). [default: 10]
+  --help, -h             display this help and exit
+```
