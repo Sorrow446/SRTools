@@ -57,10 +57,7 @@ func filterInPaths(paths []string) ([]string, error) {
 
 func parseArgs() (*Args, error) {
 	var args Args
-	err := arg.Parse(&args)
-	if err != nil {
-		return nil, err
-	}
+	arg.MustParse(&args)
 	if !(args.Threads >= 1 && args.Threads <= 100) {
 		return nil, errors.New("Max threads must be between 1 and 100.")
 	}
