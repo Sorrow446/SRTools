@@ -280,7 +280,7 @@ func decompress(outPath string) error {
 		return errors.New(errString)
 	}
 	err = os.Rename(decOutPath, outPath)
-	return nil
+	return err
 }
 
 func writeFile(buf []byte, outPath string, isComp bool, uncompSize uint64) error {
