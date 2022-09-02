@@ -19,7 +19,7 @@ Extract "dlc_01.vpp_pc" and "dlc_preorder.vpp_pc" to "G:\sr" with 20 threads:
 
 ## Pack
 **Experimental. May cause the game to black screen on some boots.**    
-Src folder must have the same structure created by the unpacker.
+Input folder must have the same structure created by the unpacker.
 
 Pack "SRTools_extracted" to "SRTools_packed.vpp_pc":   
 `srtools_x64.exe unpack -i dlc_01.vpp_pc`
