@@ -206,7 +206,7 @@ func compress(path, tempPath string) (string, int64, error) {
 	}
 	var (
 		errBuffer bytes.Buffer
-		args      = []string{"-9", "-BS5", path, outPath}
+		args      = []string{"-9", "-B5D", path, outPath}
 	)
 	cmd := exec.Command("lz4", args...)
 	cmd.Stderr = &errBuffer
@@ -246,8 +246,10 @@ func Run(args *utils.Args) error {
 		return err
 	}
 	var (
-		nameTable []byte
-		dataSize  int64
+		nameTable      []byte
+		dataSize       int64
+		uncompDataSize int64
+		compDataSize   int64
 	)
 	fmt.Println("Building name and directory string table...")
 	for idx, dir := range dirs.Dirs {
@@ -260,12 +262,19 @@ func Run(args *utils.Args) error {
 			nameTable = append(nameTable, null...)
 			dirs.Dirs[idx].Files[fileIdx].DataOffset = dataSize
 			if file.ShouldCompress {
+				compDataSize += file.CompressedSize
 				dataSize += file.CompressedSize
 			} else {
+				compDataSize += file.Size
 				dataSize += file.Size
 			}
+			uncompDataSize += file.Size
 		}
 	}
+	if args.NoCompression {
+		compDataSize += 21962
+	}
+	uncompDataSize += 21962
 
 	f, err := os.OpenFile(outPath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0755)
 	if err != nil {
@@ -327,12 +336,12 @@ func Run(args *utils.Args) error {
 		return err
 	}
 	// data size
-	err = writeUint64(f, dataSize)
+	err = writeUint64(f, uncompDataSize)
 	if err != nil {
 		return err
 	}
 	// compressed data size
-	err = writeUint64(f, dataSize)
+	err = writeUint64(f, compDataSize)
 	if err != nil {
 		return err
 	}
@@ -390,10 +399,15 @@ func Run(args *utils.Args) error {
 			if err != nil {
 				return err
 			}
-			_, err = f.Write(bytes.Repeat(null, 4))
+			// 375
+			err = writeUint32(f, 375)
 			if err != nil {
 				return err
 			}
+			// _, err = f.Write(bytes.Repeat(null, 4))
+			// if err != nil {
+			// 	return err
+			// }
 		}
 	}
 	fmt.Println("Writing directory name offsets...")
@@ -460,7 +474,10 @@ func Run(args *utils.Args) error {
 			}
 			// Crashes game.
 			// align := int64(file.Alignment)
-			// if align > 0 && align != 16 {
+			// if align == 2048 || i == 1 {
+			// 	if i == 1 {
+			// 		align = 2048
+			// 	}
 			// 	fmt.Println(file.Name)
 			// 	curPos, err := getCurrentPos(f)
 			// 	if err != nil {
