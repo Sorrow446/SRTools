@@ -26,3 +26,9 @@ Options:
   --nocompression, -n    Don't compress any files when packing. Might be a bit more stable.
   --help, -h             display this help and exit
 ```
+
+# Supported Formats
+|File Type|Read|Write|
+| --- | --- | --- |
+|vpp_pc/str2_pc|y|repack only, unstable|
+|Scribe (.scribe_pad)|y|y|
