@@ -2,7 +2,6 @@ package unpack
 
 import (
 	"bytes"
-	"encoding/binary"
 	"errors"
 	"fmt"
 	"io"
@@ -17,11 +16,10 @@ import (
 
 const (
 	dirEntriesOffset = 0x78
-	nullTerminator   = 0x0
 	defaultOutPath   = "SRTools_extracted"
 )
 
-var magic = [4]byte{'\xCE', '\x0A', '\x89', '\x51'}
+var magic = [4]byte{0xCE, 0x0A, 0x89, 0x51}
 
 func contains(arr []string, v string) bool {
 	for _, value := range arr {
@@ -78,36 +76,24 @@ func makeDirs(path string) error {
 	return err
 }
 
-func readUint32(f *os.File) (int32, error) {
+func checkMagic(f *os.File) (bool, error) {
 	buf := make([]byte, 4)
 	_, err := f.Read(buf)
 	if err != nil {
-		return 0, err
+		return false, err
 	}
-	value := binary.LittleEndian.Uint32(buf)
-	return int32(value), nil
-}
-
-func readUint64(f *os.File) (int64, error) {
-	buf := make([]byte, 8)
-	_, err := f.Read(buf)
-	if err != nil {
-		return 0, err
-	}
-	value := binary.LittleEndian.Uint64(buf)
-	return int64(value), nil
+	return bytes.Equal(buf, magic[:]), nil
 }
 
 func parseHeader(f *os.File) (*Header, error) {
-	buf := make([]byte, 4)
-	_, err := f.Read(buf)
+	ok, err := checkMagic(f)
 	if err != nil {
 		return nil, err
 	}
-	if !bytes.Equal(buf, magic[:]) {
+	if !ok {
 		return nil, errors.New("File is not a packfile.")
 	}
-	version, err := readUint32(f)
+	version, err := utils.ReadUint32(f)
 	if err != nil {
 		return nil, err
 	}
@@ -118,15 +104,15 @@ func parseHeader(f *os.File) (*Header, error) {
 	if err != nil {
 		return nil, err
 	}
-	dirEntryCount, err := readUint32(f)
+	dirEntryCount, err := utils.ReadUint32(f)
 	if err != nil {
 		return nil, err
 	}
-	dirCount, err := readUint32(f)
+	dirCount, err := utils.ReadUint32(f)
 	if err != nil {
 		return nil, err
 	}
-	namesOffset, err := readUint32(f)
+	namesOffset, err := utils.ReadUint32(f)
 	if err != nil {
 		return nil, err
 	}
@@ -134,7 +120,7 @@ func parseHeader(f *os.File) (*Header, error) {
 	if err != nil {
 		return nil, err
 	}
-	baseOffset, err := readUint32(f)
+	baseOffset, err := utils.ReadUint32(f)
 	if err != nil {
 		return nil, err
 	}
@@ -155,23 +141,23 @@ func parseEntries(f *os.File, header *Header) ([]*FileEntry, error) {
 	}
 	dirEntryCount := int(header.DirEntryCount)
 	for i := 0; i < dirEntryCount; i++ {
-		nameOffset, err := readUint64(f)
+		nameOffset, err := utils.ReadUint64(f)
 		if err != nil {
 			return nil, err
 		}
-		dirOffset, err := readUint64(f)
+		dirOffset, err := utils.ReadUint64(f)
 		if err != nil {
 			return nil, err
 		}
-		dataOffset, err := readUint64(f)
+		dataOffset, err := utils.ReadUint64(f)
 		if err != nil {
 			return nil, err
 		}
-		uncompSize, err := readUint64(f)
+		uncompSize, err := utils.ReadUint64(f)
 		if err != nil {
 			return nil, err
 		}
-		compSize, err := readUint64(f)
+		compSize, err := utils.ReadUint64(f)
 		if err != nil {
 			return nil, err
 		}
@@ -185,7 +171,7 @@ func parseEntries(f *os.File, header *Header) ([]*FileEntry, error) {
 		// }
 
 		// Causes EOFs.
-		// flags, err := readUint32(f)
+		// flags, err := utils.ReadUint32(f)
 		// if err != nil {
 		// 	return nil, err
 		// }
@@ -210,10 +196,6 @@ func parseEntries(f *os.File, header *Header) ([]*FileEntry, error) {
 	return entries, nil
 }
 
-func getCurrentPos(f *os.File) (int64, error) {
-	return f.Seek(0, io.SeekCurrent)
-}
-
 func readString(f *os.File, offset int64) (string, error) {
 	var value string
 	buf := make([]byte, 1)
@@ -226,7 +208,7 @@ func readString(f *os.File, offset int64) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		if buf[0] == nullTerminator {
+		if buf[0] == 0x0 {
 			break
 		}
 		value += string(buf[:])

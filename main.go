@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"main/convert"
 	"main/pack"
 	"main/unpack"
 	"main/utils"
@@ -26,10 +27,12 @@ func main() {
 	command := args.Command
 	now := time.Now()
 	switch command {
-	case "unpack", "extract":
-		err = unpack.Run(args)
+	case "convert":
+		err = convert.Run(args)
 	case "pack":
 		err = pack.Run(args)
+	case "unpack", "extract":
+		err = unpack.Run(args)
 	default:
 		panic("Unknown command: " + command)
 	}
