@@ -8,23 +8,7 @@ Toolkit for modding Saints Row 2022 written in Go.
 [lz4 binary](https://github.com/lz4/lz4/releases/latest) is needed if using Windows.
 
 # Usage
-vpp_pc and str2_pc packfiles are supported.
-
-
-## Extract
-Extract "dlc_01.vpp_pc" to "SRTools_extracted":   
-`srtools_x64.exe unpack -i dlc_01.vpp_pc`
-
-Extract "dlc_01.vpp_pc" and "dlc_preorder.vpp_pc" to "G:\sr" with 20 threads:   
-`srtools_x64.exe unpack -i dlc_01.vpp_pc dlc_preorder.vpp_pc -o G:\sr -t 20`
-
-## Pack
-**Experimental. May cause the game to black screen on some boots.**    
-Input folder must have the same structure created by the unpacker.
-
-Pack "SRTools_extracted" to "SRTools_packed.vpp_pc":   
-`srtools_x64.exe pack -i SRTools_extracted`
-
+[Click here for guide.](https://github.com/Sorrow446/SRTools/blob/main/guide.md)
 
 ```
 Usage: sr_tools_x64.exe --inpaths INPATHS [--outpath OUTPATH] [--threads THREADS] [--nocompression] COMMAND
